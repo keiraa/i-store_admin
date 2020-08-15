@@ -53,13 +53,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      OptionCard(img: 'images/add_notification.png',name: 'Add Notification',),
                       InkWell(
-                        child: OptionCard(img: 'images/offers.png',name: 'Offers',),
+                        child: OptionCard(img: 'images/add_notification.png',name: 'Add New Product',),
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddNewProduct()));
                         },
                       ),
+                      OptionCard(img: 'images/offers.png',name: 'Featured',),
                     ],
                   )
                 ],

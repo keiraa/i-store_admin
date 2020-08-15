@@ -5,11 +5,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:istoreadmin/Elements/LabelContainer.dart';
 import 'package:istoreadmin/Elements/PicContainer.dart';
 import 'package:istoreadmin/Elements/TextStyles.dart';
 import 'package:path/path.dart';
+
+import 'aPanel.dart';
 
 class AddNewVendor extends StatefulWidget {
   @override
@@ -23,6 +26,7 @@ class _AddNewVendorState extends State<AddNewVendor> {
   List<String> dropDownValues = ['Grocery','Fashion','Pharma','Bakery','Food','Electronics'];
   String selectedImage = 'logo.png';
   Color isSelected = Color(0xffb6b6b6);
+  double spinSize=0;
 
   final _auth = FirebaseAuth.instance;
   final firestoreInstance = Firestore.instance;
@@ -227,7 +231,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
           Center(
             child: InkWell(
               onTap: () async{
-
+                setState(() {
+                  spinSize = 20;
+                });
                 var firebaseUser = await FirebaseAuth.instance.currentUser();
                 var uid = firebaseUser.uid;
                 StorageTaskSnapshot snapshot = await storage
@@ -249,7 +255,13 @@ class _AddNewVendorState extends State<AddNewVendor> {
                   'Store Pincode':storePinCode,
                   'Icon': downloadUrl,
                 }).then((_){
-                  
+                  setState(() {
+                    spinSize = 0;
+                    selectedImage='logo.png';
+                    dropDownValue='Grocery';
+                    category='Grocery';
+                    isSelected = Color(0xffb6b6b6);
+                  });
                   print("success!");
                   FlutterToast.showToast(
                     msg: 'Added Vendor Successfully',
@@ -257,6 +269,7 @@ class _AddNewVendorState extends State<AddNewVendor> {
                     toastLength: Toast.LENGTH_SHORT,
                     timeInSecForIosWeb: 5,
                   );
+                Navigator.pop(context);
                 });
 
               },
@@ -271,6 +284,12 @@ class _AddNewVendorState extends State<AddNewVendor> {
                   child: Text('Add Shop',style: kHttps,),
                 ),
               ),
+            ),
+          ),
+          Center(
+            child: SpinKitThreeBounce(
+              color: Color(0xffff9100),
+              size: spinSize,
             ),
           )
         ],

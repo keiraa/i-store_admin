@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:istoreadmin/Elements/LabelContainer.dart';
 import 'package:istoreadmin/Elements/PicContainer.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
+
+import 'aPanel.dart';
 
 class AddNewProduct extends StatefulWidget {
   @override
@@ -22,10 +25,16 @@ class _AddNewProductState extends State<AddNewProduct> {
   String selectedImage = 'logo.png';
   Color isSelected = Color(0xffb6b6b6);
 
-  File file;
-  final firestoreInstance = Firestore.instance;
-  var storage =FirebaseStorage.instance;
+  double spinSize =0;
 
+  TextEditingController fieldController;
+
+  var storage = FirebaseStorage.instance;
+  File file;
+  final _auth = FirebaseAuth.instance;
+  final firestoreInstance = Firestore.instance;
+
+  // Details Variables:
   String sId,pName,url,category='Grocery',sTags,oPrice,rPrice;
 
   @override
@@ -57,6 +66,9 @@ class _AddNewProductState extends State<AddNewProduct> {
             margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.05),
             child: TextField(
               decoration: kVTextField,
+              onChanged: (value){
+                sId = value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'This is auto generated',),
@@ -67,6 +79,9 @@ class _AddNewProductState extends State<AddNewProduct> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                pName = value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'Please use your legal/known name',),
@@ -99,6 +114,9 @@ class _AddNewProductState extends State<AddNewProduct> {
                     decoration: kVTextField.copyWith(
                       hintText: '',
                     ),
+                    onChanged: (value){
+                      url = value;
+                    },
                   ),
                 )
               ],
@@ -127,6 +145,7 @@ class _AddNewProductState extends State<AddNewProduct> {
               onChanged: (String value){
                 setState(() {
                   dropDownValue=value;
+                  category = value;
                 });
               },
               items: dropDownValues.map<DropdownMenuItem<String>>((String value){
@@ -145,6 +164,7 @@ class _AddNewProductState extends State<AddNewProduct> {
               setState(() {
                 selectedImage = basename(file.path);
                 isSelected = Color(0xff555555);
+                //TODO: add image file to a variable
               });
             },
             child: Container(
@@ -178,6 +198,9 @@ class _AddNewProductState extends State<AddNewProduct> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                sTags = value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'Minimum 5 separate with ";"',),
@@ -188,6 +211,9 @@ class _AddNewProductState extends State<AddNewProduct> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                oPrice=value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'INR',),
@@ -198,6 +224,9 @@ class _AddNewProductState extends State<AddNewProduct> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                rPrice=value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'INR',),
@@ -207,6 +236,9 @@ class _AddNewProductState extends State<AddNewProduct> {
           Center(
             child: InkWell(
               onTap: () async{
+                setState(() {
+                  spinSize = 20;
+                });
                 var firebaseUser = await FirebaseAuth.instance.currentUser();
                 var uid = firebaseUser.uid;
                 StorageTaskSnapshot snapshot = await storage.ref().child('pImages/$uid').putFile(file).onComplete;
@@ -225,20 +257,26 @@ class _AddNewProductState extends State<AddNewProduct> {
                   'Regular Price': rPrice,
                   'Product Image': downloadUrl,
                 }).then((value){
+                  setState(() {
+                    spinSize = 0;
+                  });
                   print('success!');
+                  FlutterToast.showToast(
+                    msg: 'Added Product Successfully',
+                    gravity: ToastGravity.BOTTOM,
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 5,
+                  );
+                  Navigator.pop(context);
                   setState(() {
                     selectedImage='logo.png';
                     dropDownValue='Grocery';
                     category='Grocery';
+
                     isSelected = Color(0xffb6b6b6);
                   });
                 });
-                FlutterToast.showToast(
-                  msg: 'Added Product Successfully',
-                  gravity: ToastGravity.BOTTOM,
-                  toastLength: Toast.LENGTH_SHORT,
-                  timeInSecForIosWeb: 5,
-                );
+
               },
               child: Container(
                 width: 150,
@@ -248,9 +286,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
                 child: Center(
-                  child: Text('Add Featured',style: kHttps,),
+                  child: Text('Add Product',style: kHttps,),
                 ),
               ),
+            ),
+          ),
+          Center(
+            child: SpinKitThreeBounce(
+              color: Color(0xffff9100),
+              size: spinSize,
             ),
           )
         ],

@@ -79,8 +79,8 @@ class OptionCard extends StatelessWidget {
     return Card(
       elevation: 20,
       child: Container(
-        padding: EdgeInsets.all(30),
-        height: MediaQuery.of(context).size.height*0.21,
+        padding: EdgeInsets.all(25),
+        height: MediaQuery.of(context).size.height*0.22,
         width: MediaQuery.of(context).size.width*0.382,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

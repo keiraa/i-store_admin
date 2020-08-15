@@ -1,7 +1,11 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:istoreadmin/Elements/LabelContainer.dart';
 import 'package:istoreadmin/Elements/PicContainer.dart';
 import 'package:istoreadmin/Elements/TextStyles.dart';
@@ -13,10 +17,18 @@ class AddNewVendor extends StatefulWidget {
 }
 
 class _AddNewVendorState extends State<AddNewVendor> {
+  var storage = FirebaseStorage.instance;
+  File file;
   String dropDownValue = 'Grocery';
   List<String> dropDownValues = ['Grocery','Fashion','Pharma','Bakery','Food','Electronics'];
   String selectedImage = 'logo.png';
   Color isSelected = Color(0xffb6b6b6);
+
+  final _auth = FirebaseAuth.instance;
+  final firestoreInstance = Firestore.instance;
+
+  // Details Variables:
+  String sId,sName,wUrl,category='Grocery',sTags,servicePinCode,storePinCode;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +58,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
             margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.05),
             child: TextField(
               decoration: kVTextField,
+              onChanged: (value){
+                sId = value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'This is auto generated',),
@@ -56,6 +71,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                sName = value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'Please use your legal/known name',),
@@ -88,6 +106,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
                     decoration: kVTextField.copyWith(
                       hintText: '',
                     ),
+                    onChanged: (value){
+                      wUrl=value;
+                    },
                   ),
                 )
               ],
@@ -116,6 +137,7 @@ class _AddNewVendorState extends State<AddNewVendor> {
               onChanged: (String value){
                 setState(() {
                   dropDownValue=value;
+                  category=dropDownValue;
                 });
               },
               items: dropDownValues.map<DropdownMenuItem<String>>((String value){
@@ -130,8 +152,8 @@ class _AddNewVendorState extends State<AddNewVendor> {
           LabelContainer(label: 'Upload Icon/Logo',),
           GestureDetector(
             onTap: () async{
-              File file = await FilePicker.getFile();
-              setState(() {
+              file = await FilePicker.getFile();
+              setState((){
                 selectedImage = basename(file.path);
                 isSelected = Color(0xff555555);
               });
@@ -167,6 +189,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                sTags=value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'Minimum 10 separate with ";"',),
@@ -177,6 +202,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                servicePinCode=value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'i.e. 110093',),
@@ -187,6 +215,9 @@ class _AddNewVendorState extends State<AddNewVendor> {
               decoration: kVTextField.copyWith(
                 hintText: '',
               ),
+              onChanged: (value){
+                storePinCode=value;
+              },
             ),
           ),
           HintLabelContainer(hintLabel: 'i.e. 110093',),
@@ -194,15 +225,51 @@ class _AddNewVendorState extends State<AddNewVendor> {
             height: MediaQuery.of(context).size.height*0.05,
           ),
           Center(
-            child: Container(
-              width: 150,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xffefdf16),Color(0xffff9100)]),
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
-              child: Center(
-                child: Text('Add Shop',style: kHttps,),
+            child: InkWell(
+              onTap: () async{
+
+                var firebaseUser = await FirebaseAuth.instance.currentUser();
+                var uid = firebaseUser.uid;
+                StorageTaskSnapshot snapshot = await storage
+                    .ref()
+                    .child("images/$uid")
+                    .putFile(file)
+                    .onComplete;
+                String downloadUrl;
+                if (snapshot.error == null) {
+                  downloadUrl = await snapshot.ref.getDownloadURL();
+                }
+
+                firestoreInstance.collection("vendors").document(uid).setData({
+                  'Store Id': sId,
+                  'Store Name': sName,
+                  'Web Url': wUrl,
+                  'Search Tags': sTags,
+                  'Service Pincode': servicePinCode,
+                  'Store Pincode':storePinCode,
+                  'Icon': downloadUrl,
+                }).then((_){
+                  
+                  print("success!");
+                  FlutterToast.showToast(
+                    msg: 'Added Vendor Successfully',
+                    gravity: ToastGravity.BOTTOM,
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 5,
+                  );
+                });
+
+              },
+              child: Container(
+                width: 150,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Color(0xffefdf16),Color(0xffff9100)]),
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+                child: Center(
+                  child: Text('Add Shop',style: kHttps,),
+                ),
               ),
             ),
           )

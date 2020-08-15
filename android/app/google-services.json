@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "781128371445",
+    "firebase_url": "https://admin-c9f32.firebaseio.com",
+    "project_id": "admin-c9f32",
+    "storage_bucket": "admin-c9f32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781128371445:android:a141c46d553de6945f89bc",
+        "android_client_info": {
+          "package_name": "com.appovate.apkidookanadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-PYIGGhARDLb-BPi7M2miw7ZFI7vZ5-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781128371445:android:6fec3ed978c686155f89bc",
+        "android_client_info": {
+          "package_name": "com.appovate.istore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-PYIGGhARDLb-BPi7M2miw7ZFI7vZ5-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781128371445:android:d1c1a4284000006b5f89bc",
+        "android_client_info": {
+          "package_name": "com.appovate.istoreadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781128371445-7dvtoo1boisgndi3j5mfgh3n9oatd5ef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.appovate.istoreadmin",
+            "certificate_hash": "820d5f5184e47b168cc6c22de0ddedc7f2c11b92"
+          }
+        },
+        {
+          "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-PYIGGhARDLb-BPi7M2miw7ZFI7vZ5-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781128371445-nn3raeqp0n5tuq9qek5bsf30fqn3jkp3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

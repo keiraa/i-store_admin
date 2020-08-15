@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:istoreadmin/Elements/LabelContainer.dart';
 import 'package:istoreadmin/Elements/PicContainer.dart';
 import 'package:istoreadmin/Elements/TextStyles.dart';
@@ -17,6 +21,13 @@ class _AddNewProductState extends State<AddNewProduct> {
   List<String> dropDownValues = ['Grocery','Fashion','Pharma','Bakery','Food','Electronics'];
   String selectedImage = 'logo.png';
   Color isSelected = Color(0xffb6b6b6);
+
+  File file;
+  final firestoreInstance = Firestore.instance;
+  var storage =FirebaseStorage.instance;
+
+  String sId,pName,url,category='Grocery',sTags,oPrice,rPrice;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +141,7 @@ class _AddNewProductState extends State<AddNewProduct> {
           LabelContainer(label: 'Product Image',),
           GestureDetector(
             onTap: () async{
-              File file = await FilePicker.getFile();
+              file = await FilePicker.getFile();
               setState(() {
                 selectedImage = basename(file.path);
                 isSelected = Color(0xff555555);
@@ -194,15 +205,51 @@ class _AddNewProductState extends State<AddNewProduct> {
             height: MediaQuery.of(context).size.height*0.05,
           ),
           Center(
-            child: Container(
-              width: 150,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xffefdf16),Color(0xffff9100)]),
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
-              child: Center(
-                child: Text('Add Featured',style: kHttps,),
+            child: InkWell(
+              onTap: () async{
+                var firebaseUser = await FirebaseAuth.instance.currentUser();
+                var uid = firebaseUser.uid;
+                StorageTaskSnapshot snapshot = await storage.ref().child('pImages/$uid').putFile(file).onComplete;
+                String downloadUrl;
+                if(snapshot!=null)
+                {
+                  downloadUrl = await snapshot.ref.getDownloadURL();
+                }
+                firestoreInstance.collection('products').document(uid).setData({
+                  'Store Id': sId,
+                  'Product Name': pName,
+                  'Url': url,
+                  'Category': category,
+                  'Search Tags': sTags,
+                  'Offer Price': oPrice,
+                  'Regular Price': rPrice,
+                  'Product Image': downloadUrl,
+                }).then((value){
+                  print('success!');
+                  setState(() {
+                    selectedImage='logo.png';
+                    dropDownValue='Grocery';
+                    category='Grocery';
+                    isSelected = Color(0xffb6b6b6);
+                  });
+                });
+                FlutterToast.showToast(
+                  msg: 'Added Product Successfully',
+                  gravity: ToastGravity.BOTTOM,
+                  toastLength: Toast.LENGTH_SHORT,
+                  timeInSecForIosWeb: 5,
+                );
+              },
+              child: Container(
+                width: 150,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Color(0xffefdf16),Color(0xffff9100)]),
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+                child: Center(
+                  child: Text('Add Featured',style: kHttps,),
+                ),
               ),
             ),
           )

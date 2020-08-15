@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:istoreadmin/Elements/TextStyles.dart';
+import 'package:istoreadmin/services/authentication.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -51,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: MediaQuery.of(context).size.height*0.025,
               ),
               TextField(
+                obscureText: true,
                 onChanged: (value){
                   _password=value;
                 },
@@ -63,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               GestureDetector(
                 onTap: (){
-                  //signin(_email.trim(), _password.trim(), context);
+                  signin(_email.trim(), _password.trim(), context);
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
